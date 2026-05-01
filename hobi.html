@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI destekli kişiselleştirilmiş hobi yol haritası">
+  <title>HobiKeşif AI | Yapay Zeka ile Yetenegini Keşfet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: rgba(20, 25, 40, 0.6);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+    body {
+      background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, #0f766e 0%, transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 24px;
+      background-attachment: fixed;
+    }
+
+    .container { max-width: 960px; margin: auto; }
+    
+    /* Header */
+    header { text-align: center; padding: 40px 0 32px; }
+    .logo { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #818cf8, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+    .subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+    /* Glass Cards */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); }
+
+    /* Progress Bar */
+    .progress-wrap { height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; margin: 24px 0; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #2dd4bf); width: 0%; transition: width 0.5s ease; border-radius: 99px; }
+
+    /* Multi-step Form */
+    .step { display: none; animation: fadeIn 0.4s ease; }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-title { font-size: 1.4rem; margin-bottom: 8px; }
+    .step-desc { color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem; }
+
+    .options-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .option-card {
+      padding: 16px; background: rgba(255,255,255,0.04); border: 2px solid transparent; border-radius: 12px; cursor: pointer; transition: var(--transition);
+    }
+    .option-card:hover { background: rgba(255,255,255,0.08); }
+    .option-card.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.15); }
+    .option-card h4 { margin-bottom: 4px; }
+    .option-card p { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Buttons */
+    .btn {
+      background: var(--accent); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: var(--transition); width: 100%; margin-top: 24px;
+    }
+    .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-outline { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); }
+    .btn-outline:hover { border-color: var(--text); color: var(--text); }
+
+    .nav-buttons { display: flex; gap: 12px; margin-top: 20px; }
+    .nav-buttons button { flex: 1; }
+
+    /* Loading */
+    .loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0; text-align: center; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader p { margin-top: 16px; color: var(--text-muted); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+    /* Results */
+    .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .result-header h2 { font-size: 1.8rem; }
+    .tag { background: rgba(99, 102, 241, 0.2); color: var(--accent-hover); padding: 4px 10px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; }
+    
+    .timeline { display: grid; gap: 16px; margin: 24px 0; }
+    .day-card { background: rgba(255,255,255,0.03); border-left: 3px solid var(--accent); padding: 16px; border-radius: 0 12px 12px 0; }
+    .day-card h4 { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .day-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px; }
+    .meta { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted); }
+    .meta a { color: #38bdf8; text-decoration: none; }
+    .meta a:hover { text-decoration: underline; }
+
+    .actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .actions button { flex: 1; min-width: 140px; }
+
+    /* Disclaimer & Footer */
+    .disclaimer { background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--warning); padding: 12px; margin: 24px 0; font-size: 0.85rem; color: #fde68a; border-radius: 0 8px 8px 0; }
+    footer { text-align: center; padding: 32px 0; color: var(--text-muted); font-size: 0.8rem; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .logo { font-size: 2rem; }
+      .options-grid { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">🧠 HobiKeşif AI</div>
+      <p class="subtitle">Zamanına, bütçene ve öğrenme stiline uygun yapay zeka destekli kişisel yol haritası</p>
+    </header>
+
+    <main>
+      <!-- QUIZ SECTION -->
+      <section id="quiz-section" class="card">
+        <div class="progress-wrap"><div class="progress-fill" id="progress"></div></div>
+        
+        <div class="step active" data-step="1">
+          <h3 class="step-title">⏱ Haftada kaç saat ayırabilirsin?</h3>
+          <p class="step-desc">Gerçekçi bir süre seçmek, sürdürülebilir bir başlangıç yapmanı sağlar.</p>
+          <div class="options-grid">
+            <div class="option-card" data-val="1-2"><h4>1-2 Saat</h4><p>Yoğun hafta, mikro alışkanlıklar</p></div>
+            <div class="option-card" data-val="3-5"><h4>3-5 Saat</h4><p>Dengeli tempo, orta seviye ilerleme</p></div>
+            <div class="option-card" data-val="5+"><h4>5+ Saat</h4><p>Derin odak, hızlı gelişim</p></div>
+          </div>
+          <div class="nav-buttons"><button class="btn btn-next" disabled>Sonraki →</button></div>
+        </div>
+
+        <div class="step" data-step="2">
+          <h3 class="step-title">💰 Aylık maksimum bütçen?</h3>
+          <p class="step-desc">Malzeme, kurs veya dijital araçlar için harcama limitin.</p>
+          <div class="options-grid">
+            <div class="option-card" data-val="0-50"><h4>0-50 ₺</h4><p>Dijital kaynaklar, evde uygulamalar</p></div>
+            <div class="option-card" data-val="50-200"><h4>50-200 ₺</h4><p>Başlangıç kitleri, temel malzemeler</p></div>
+            <div class="option-card" data-val="200+"><h4>200+ ₺</h4><p>Premium araçlar, yerel atölyeler</p></div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn-outline btn-prev">← Geri</button>
+            <button class="btn btn-next" disabled>Sonraki →</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="3">
+          <h3 class="step-title">📖 Nasıl öğrenmeyi tercih edersin?</h3>
+          <p class="step-desc">Beyninin en hızlı sindirdiği yöntem.</p>
+          <div class="options-grid">
+            <div class="option-card" data-val="video"><h4>🎥 Video / Görsel</h4><p>YouTube, interaktif dersler</p></div>
+            <div class="option-card" data-val="yazili"><h4>📚 Yazılı / Kitap</h4><p>Makaleler, rehberler, notlar</p></div>
+            <div class="option-card" data-val="uygulamali"><h4>🔧 Uygulamalı</h4><p>Deneyerek, yaparak, hata kabul eden</p></div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn-outline btn-prev">← Geri</button>
+            <button class="btn btn-next" disabled>Sonraki →</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="4">
+          <h3 class="step-title">🎯 İlgi alanların?</h3>
+          <p class="step-desc">Birden fazla seçebilirsin.</p>
+          <div class="options-grid">
+            <div class="option-card" data-val="sanat"><h4>🎨 Sanat & Tasarım</h4><p>Çizim, fotoğraf, dijital sanat</p></div>
+            <div class="option-card" data-val="teknoloji"><h4>💻 Teknoloji</h4><p>Kodlama, yapay zeka, elektronik</p></div>
+            <div class="option-card" data-val="spor"><h4>🏃 Spor & Hareket</h4><p>Yoga, koşu, dans, doğa</p></div>
+            <div class="option-card" data-val="el-isleri"><h4>🛠 El İşleri & Tamir</h4><p>Ahşap, dikiş, model, tamirat</p></div>
+            <div class="option-card" data-val="muzik"><h4>🎵 Müzik & Ses</h4><p>Enstrüman, prodüksiyon, podcast</p></div>
+            <div class="option-card" data-val="fikir"><h4>💭 Fikir & Yazı</h4><p>Blog, hikaye, strateji, dil</p></div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn-outline btn-prev">← Geri</button>
+            <button class="btn btn-generate" disabled>🚀 Yol Haritası Oluştur</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOADING SECTION -->
+      <section id="loading-section" class="card loader" style="display:none;">
+        <div class="spinner"></div>
+        <p>AI sana özel 7 günlük yol haritasını hazırlıyor...</p>
+      </section>
+
+      <!-- RESULT SECTION -->
+      <section id="result-section" class="card" style="display:none;">
+        <div class="result-header">
+          <h2 id="res-title">-</h2>
+          <span class="tag">AI Önerisi</span>
+        </div>
+        <p id="res-why" style="color:var(--text-muted); margin-bottom:16px;"></p>
+        
+        <div class="timeline" id="res-timeline"></div>
+        
+        <div class="disclaimer">⚖️ Bu öneriler yapay zeka tarafından kişiselleştirilmiş taslaklardır. Profesyonel eğitim, koçluk veya hukuki/psikolojik tavsiye yerine geçmez.</div>
+
+        <div class="actions">
+          <button class="btn btn-outline" id="btn-copy">📋 Panoya Kopyala</button>
+          <button class="btn btn-outline" id="btn-json">💾 JSON İndir</button>
+          <button class="btn" id="btn-restart">🔄 Yeni Keşif</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2026 HobiKeşif AI | Statik MVP | KVKK Uyumlu | Veriler anlık işlenir, saklanmaz.</footer>
+  </div>
+
+  <script>
+    // ⚙️ AYARLAR
+    const WORKER_URL = "https://YOUR-WORKER-URL.workers.dev"; // Cloudflare Worker adresini buraya yapıştır
+
+    // 📊 DURUM YÖNETİMİ
+    const state = { step: 1, answers: { time:'', budget:'', style:'', interests:[] } };
+    const totalSteps = 4;
+
+    // 🎛️ DOM ELEMENTLERİ
+    const els = {
+      steps: document.querySelectorAll('.step'),
+      progress: document.getElementById('progress'),
+      quiz: document.getElementById('quiz-section'),
+      loading: document.getElementById('loading-section'),
+      result: document.getElementById('result-section'),
+      options: document.querySelectorAll('.option-card')
+    };
+
+    // 🔁 ADIM GEÇİŞLERİ
+    function updateProgress() {
+      els.progress.style.width = `${(state.step / totalSteps) * 100}%`;
+    }
+    function goToStep(n) {
+      els.steps.forEach(s => s.classList.remove('active'));
+      document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+      state.step = n;
+      updateProgress();
+    }
+
+    // ✅ SEÇİM MANTIĞI
+    els.options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const stepEl = opt.closest('.step');
+        const isMulti = stepEl.dataset.step == 4;
+        
+        if (isMulti) {
+          opt.classList.toggle('selected');
+          state.answers.interests = [...stepEl.querySelectorAll('.selected')].map(c => c.dataset.val);
+          stepEl.querySelector('.btn-generate').disabled = state.answers.interests.length === 0;
+        } else {
+          stepEl.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+          opt.classList.add('selected');
+          const key = ['time','budget','style'][state.step-1];
+          state.answers[key] = opt.dataset.val;
+          stepEl.querySelector('.btn-next').disabled = false;
+        }
+      });
+    });
+
+    // 🔄 BUTON OLAYLARI
+    document.querySelectorAll('.btn-next').forEach(btn => {
+      btn.addEventListener('click', () => goToStep(state.step + 1));
+    });
+    document.querySelectorAll('.btn-prev').forEach(btn => {
+      btn.addEventListener('click', () => goToStep(state.step - 1));
+    });
+    document.querySelector('.btn-generate').addEventListener('click', generateRoadmap);
+
+    // 🤖 AI ÇAĞRISI
+    async function generateRoadmap() {
+      els.quiz.style.display = 'none';
+      els.loading.style.display = 'flex';
+      
+      const prompt = `Kullanıcı profili: zaman="${state.answers.time}", bütçe="${state.answers.budget}₺", öğrenme="${state.answers.style}", ilgi="${state.answers.interests.join(', ')}".
+Sadece geçerli JSON döndür. Başka metin ekleme.
+{
+  "hobby": "string",
+  "why": "string (max 100 karakter)",
+  "week": [
+    {"gun": 1, "gorev": "string", "sure_dk": 25, "kaynak_url": "https://", "malzeme": "string"}
+  ],
+  "uyari": "string veya null"
+}`;
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: "meta-llama/llama-3.1-8b-instruct",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7,
+            max_tokens: 800
+          })
+        });
+
+        if (!res.ok) throw new Error(`Sunucu: ${res.status}`);
+        const data = await res.json();
+        if (!data.choices?.[0]?.message?.content) throw new Error("AI yanıtı boş");
+
+        let json = JSON.parse(data.choices[0].message.content);
+        if (!json.hobby || !json.week?.length) throw new Error("Geçersiz yapı");
+
+        renderResult(json);
+      } catch (err) {
+        alert("Hata: " + err.message + "\nLütfen tekrar dene veya Worker URL'ni kontrol et.");
+        els.loading.style.display = 'none';
+        els.quiz.style.display = 'block';
+      }
+    }
+
+    // 🖼️ SONUÇ RENDER
+    function renderResult(data) {
+      els.loading.style.display = 'none';
+      els.result.style.display = 'block';
+      document.getElementById('res-title').textContent = `🎯 ${data.hobby}`;
+      document.getElementById('res-why').textContent = data.why;
+      
+      document.getElementById('res-timeline').innerHTML = data.week.map(d => `
+        <div class="day-card">
+          <h4>Gün ${d.gun} <span style="color:#94a3b8; font-weight:400">⏱ ${d.sure_dk} dk</span></h4>
+          <p>${d.gorev}</p>
+          <div class="meta">
+            <span>📦 ${d.malzeme}</span>
+            ${d.kaynak_url ? `<a href="${d.kaynak_url}" target="_blank">🔗 Kaynak</a>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Paylaşım / Dışa Aktarma
+      document.getElementById('btn-copy').onclick = () => {
+        navigator.clipboard.writeText(`🎯 ${data.hobby}\n${data.week.map(d => `Gün ${d.gun}: ${d.gorev} (${d.sure_dk}dk)`).join('\n')}`);
+        alert("Panoya kopyalandı!");
+      };
+      document.getElementById('btn-json').onclick = () => {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `hobi-yol-haritasi-${Date.now()}.json`; a.click();
+      };
+    }
+
+    // 🔄 YENİDEN BAŞLAT
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      state.step = 1; state.answers = { time:'', budget:'', style:'', interests:[] };
+      document.querySelectorAll('.selected').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.btn-next, .btn-generate').forEach(b => b.disabled = true);
+      els.result.style.display = 'none'; els.loading.style.display = 'none'; els.quiz.style.display = 'block';
+      goToStep(1);
+    });
+
+    // Başlangıç
+    updateProgress();
+  </script>
+</body>
+</html>
