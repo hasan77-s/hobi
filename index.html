@@ -3,301 +3,1405 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HobiKeşif AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="AI destekli kişiselleştirilmiş hobi yol haritası platformu">
+  <meta name="theme-color" content="#6366f1">
+  <title>HobiKeşif AI | Yapay Zeka ile Yeteneğini Keşfet</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    :root { --bg: #0b0f19; --card: rgba(20, 25, 40, 0.7); --border: rgba(255,255,255,0.1); --accent: #6366f1; --text: #f8fafc; --muted: #94a3b8; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    .container { max-width: 800px; width: 100%; }
-    header { text-align: center; margin-bottom: 40px; }
-    h1 { font-size: 2.5rem; background: linear-gradient(to right, #818cf8, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-    .subtitle { color: var(--muted); font-size: 1.1rem; }
-    
-    .card { background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    
-    .step { display: none; }
-    .step.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .step-title { font-size: 1.4rem; margin-bottom: 8px; }
-    .step-desc { color: var(--muted); margin-bottom: 20px; }
-    
-    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-    .opt { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; text-align: left; }
-    .opt:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-    .opt.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.15); }
-    .opt h4 { margin-bottom: 4px; font-size: 1rem; }
-    .opt p { font-size: 0.85rem; color: var(--muted); }
-    
-    .btn { background: var(--accent); color: white; border: none; padding: 14px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 24px; font-size: 1rem; transition: all 0.2s; }
-    .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-2px); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); }
-    .btn-outline:hover { border-color: var(--text); color: var(--text); }
-    
-    .nav-buttons { display: flex; gap: 12px; margin-top: 20px; }
-    .nav-buttons button { flex: 1; }
-    
-    .progress-wrap { height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #2dd4bf); width: 0%; transition: width 0.4s ease; border-radius: 99px; }
-    
-    .loader { text-align: center; padding: 40px 20px; }
-    .spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .result-header h2 { font-size: 1.8rem; }
-    .tag { background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; }
-    
-    .timeline { display: grid; gap: 12px; margin: 20px 0; }
-    .day-card { background: rgba(255,255,255,0.03); border-left: 3px solid var(--accent); padding: 16px; border-radius: 0 12px 12px 0; }
-    .day-card h4 { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .day-card p { color: var(--muted); font-size: 0.9rem; }
-    
-    .error-box { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 16px; border-radius: 10px; margin-top: 20px; display: none; }
-    
-    footer { text-align: center; margin-top: 40px; color: var(--muted); font-size: 0.85rem; }
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: rgba(20, 25, 40, 0.6);
+      --bg-card: rgba(30, 35, 50, 0.7);
+      --border-primary: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(99, 102, 241, 0.3);
+      --accent-primary: #6366f1;
+      --accent-secondary: #818cf8;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #2dd4bf 100%);
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(45, 212, 191, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-animation .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 20s infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 60px 0 40px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .logo-icon {
+      font-size: 3rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 400;
+    }
+
+    .tagline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--border-accent);
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      color: var(--accent-secondary);
+      margin-top: 16px;
+      font-weight: 500;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 16px 48px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin-bottom: 32px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 99px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Steps */
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step-header {
+      margin-bottom: 24px;
+    }
+
+    .step-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .step-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin: 24px 0;
+    }
+
+    .option-card {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 0;
+    }
+
+    .option-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .option-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-accent);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.2);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.15);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    }
+
+    .option-card.selected::before {
+      opacity: 0.08;
+    }
+
+    .option-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .option-card h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .option-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover:not(:disabled)::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border-primary);
+      color: var(--text-secondary);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .nav-buttons button {
+      flex: 1;
+    }
+
+    /* Loading */
+    .loader-container {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .loader-container.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .spinner-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+    }
+
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 4px solid rgba(99, 102, 241, 0.1);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .spinner-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top-color: var(--success);
+      border-radius: 50%;
+      animation: spin 2s linear infinite reverse;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loader-subtext {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .loader-dots {
+      display: inline-flex;
+      gap: 4px;
+      margin-top: 16px;
+    }
+
+    .loader-dots span {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .loader-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loader-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* Results */
+    .result-container {
+      display: none;
+    }
+
+    .result-container.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border-primary);
+    }
+
+    .result-icon {
+      font-size: 3rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .result-title-wrapper {
+      flex: 1;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .result-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid var(--border-accent);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      color: var(--accent-secondary);
+      font-weight: 600;
+    }
+
+    .result-why {
+      background: rgba(45, 212, 191, 0.1);
+      border-left: 4px solid var(--success);
+      padding: 16px 20px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 32px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .day-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-primary);
+      border-left: 4px solid var(--accent-primary);
+      padding: 20px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 0;
+    }
+
+    .day-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .day-card:hover {
+      transform: translateX(4px);
+      border-left-color: var(--accent-secondary);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+    }
+
+    .day-card:hover::before {
+      opacity: 0.03;
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .day-number {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-secondary);
+    }
+
+    .day-duration {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      color: var(--accent-secondary);
+      font-weight: 600;
+    }
+
+    .day-task {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .day-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .day-meta i {
+      margin-right: 6px;
+      color: var(--accent-primary);
+    }
+
+    /* Actions */
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    /* Error Box */
+    .error-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid var(--error);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 24px;
+      animation: shake 0.5s;
+    }
+
+    .error-box.active {
+      display: block;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .error-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--error);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .error-message {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .error-details {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      overflow-x: auto;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--warning);
+      padding: 16px 20px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: 24px 0;
+      font-size: 0.9rem;
+      color: #fde68a;
+      line-height: 1.6;
+    }
+
+    .disclaimer i {
+      margin-right: 8px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .logo {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      .step-title {
+        font-size: 1.4rem;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-buttons {
+        flex-direction: column;
+      }
+
+      .result-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Debug Panel */
+    .debug-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--success);
+      max-width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+    }
+
+    .debug-panel.active {
+      display: block;
+    }
+
+    .debug-panel h4 {
+      margin-bottom: 8px;
+      color: var(--accent-secondary);
+    }
+
+    .debug-panel pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 <body>
+  <!-- Background Animation -->
+  <div class="bg-animation" id="bgAnimation"></div>
+
   <div class="container">
+    <!-- Header -->
     <header>
-      <h1>🧠 HobiKeşif AI</h1>
-      <p class="subtitle">Zamanına ve bütçene uygun yapay zeka destekli hobi önerileri</p>
+      <div class="logo-wrapper">
+        <span class="logo-icon">🧠</span>
+        <h1 class="logo">HobiKeşif AI</h1>
+      </div>
+      <p class="subtitle">Zamanına, bütçene ve öğrenme stiline uygun yapay zeka destekli kişisel yol haritası</p>
+      <div class="tagline">
+        <i class="fas fa-bolt"></i>
+        7 Günde Yeni Bir Beceri
+      </div>
     </header>
 
     <main>
+      <!-- Quiz Section -->
       <section id="quiz-section" class="card">
-        <div class="progress-wrap"><div class="progress-fill" id="progress"></div></div>
+        <div class="progress-container">
+          <div class="progress-label">
+            <span id="progress-text">Adım 1 / 4</span>
+            <span id="progress-percent">%0</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-fill" id="progress"></div>
+          </div>
+        </div>
         
-        <!-- Adım 1 -->
+        <!-- Step 1: Time -->
         <div class="step active" data-step="1">
-          <h3 class="step-title">⏱ Haftada kaç saat ayırabilirsin?</h3>
-          <p class="step-desc">Gerçekçi bir süre seçmek önemlidir.</p>
-          <div class="options">
-            <div class="option-card" data-val="1-2"><h4>1-2 Saat</h4><p>Yoğun tempo, mikro alışkanlıklar</p></div>
-            <div class="option-card" data-val="3-5"><h4>3-5 Saat</h4><p>Dengeli, orta seviye</p></div>
-            <div class="option-card" data-val="5+"><h4>5+ Saat</h4><p>Derin odak, hızlı gelişim</p></div>
+          <div class="step-header">
+            <h3 class="step-title">⏱ Haftada kaç saat ayırabilirsin?</h3>
+            <p class="step-desc">Gerçekçi bir süre seçmek, sürdürülebilir bir başlangıç yapmanı sağlar. Yoğun tempoda bile küçük adımlarla ilerleyebilirsin.</p>
           </div>
-          <div class="nav-buttons"><button class="btn btn-next" disabled>Sonraki →</button></div>
+          <div class="options-grid">
+            <div class="option-card" data-val="1-2">
+              <span class="option-icon">🕐</span>
+              <h4>1-2 Saat</h4>
+              <p>Yoğun hafta, mikro alışkanlıklar ve hızlı pratikler</p>
+            </div>
+            <div class="option-card" data-val="3-5">
+              <span class="option-icon">🕑</span>
+              <h4>3-5 Saat</h4>
+              <p>Dengeli tempo, orta seviye ilerleme ve derinleşme</p>
+            </div>
+            <div class="option-card" data-val="5+">
+              <span class="option-icon">🕒</span>
+              <h4>5+ Saat</h4>
+              <p>Derin odak, hızlı gelişim ve uzmanlaşma</p>
+            </div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn-next" disabled>
+              Sonraki Adım <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Adım 2 -->
+        <!-- Step 2: Budget -->
         <div class="step" data-step="2">
-          <h3 class="step-title">💰 Aylık bütçen?</h3>
-          <p class="step-desc">Malzeme ve kaynaklar için.</p>
-          <div class="options">
-            <div class="option-card" data-val="0-50"><h4>0-50 ₺</h4><p>Dijital kaynaklar, ücretsiz</p></div>
-            <div class="option-card" data-val="50-200"><h4>50-200 ₺</h4><p>Başlangıç kitleri</p></div>
-            <div class="option-card" data-val="200+"><h4>200+ ₺</h4><p>Premium araçlar</p></div>
+          <div class="step-header">
+            <h3 class="step-title">💰 Aylık maksimum bütçen?</h3>
+            <p class="step-desc">Malzeme, kurs, dijital araçlar veya ekipman için harcama limitin. Unutma, birçok harika hobi ücretsiz başlar!</p>
+          </div>
+          <div class="options-grid">
+            <div class="option-card" data-val="0-50">
+              <span class="option-icon">🆓</span>
+              <h4>0-50 ₺</h4>
+              <p>Dijital kaynaklar, evde uygulamalar, ücretsiz içerikler</p>
+            </div>
+            <div class="option-card" data-val="50-200">
+              <span class="option-icon">💵</span>
+              <h4>50-200 ₺</h4>
+              <p>Başlangıç kitleri, temel malzemeler, online kurslar</p>
+            </div>
+            <div class="option-card" data-val="200+">
+              <span class="option-icon">💎</span>
+              <h4>200+ ₺</h4>
+              <p>Premium araçlar, yerel atölyeler, profesyonel ekipman</p>
+            </div>
           </div>
           <div class="nav-buttons">
-            <button class="btn btn-outline btn-prev">← Geri</button>
-            <button class="btn btn-next" disabled>Sonraki →</button>
+            <button class="btn btn-outline btn-prev">
+              <i class="fas fa-arrow-left"></i> Geri
+            </button>
+            <button class="btn btn-next" disabled>
+              Sonraki Adım <i class="fas fa-arrow-right"></i>
+            </button>
           </div>
         </div>
 
-        <!-- Adım 3 -->
+        <!-- Step 3: Learning Style -->
         <div class="step" data-step="3">
-          <h3 class="step-title">📖 Nasıl öğrenirsin?</h3>
-          <p class="step-desc">En rahat ettiğin yöntem.</p>
-          <div class="options">
-            <div class="option-card" data-val="video"><h4>🎥 Video</h4><p>YouTube, görsel öğrenme</p></div>
-            <div class="option-card" data-val="yazili"><h4>📚 Yazılı</h4><p>Makale, kitap, rehber</p></div>
-            <div class="option-card" data-val="uygulamali"><h4>🔧 Uygulamalı</h4><p>Deneyerek yaparak</p></div>
+          <div class="step-header">
+            <h3 class="step-title">📖 Nasıl öğrenmeyi tercih edersin?</h3>
+            <p class="step-desc">Beyninin en hızlı ve kalıcı öğrendiği yöntem. Herkesin öğrenme stili farklıdır, sana en uygun olanı seç.</p>
+          </div>
+          <div class="options-grid">
+            <div class="option-card" data-val="video">
+              <span class="option-icon">🎥</span>
+              <h4>Video / Görsel</h4>
+              <p>YouTube eğitimleri, interaktif dersler, görsel anlatım</p>
+            </div>
+            <div class="option-card" data-val="yazili">
+              <span class="option-icon">📚</span>
+              <h4>Yazılı / Kitap</h4>
+              <p>Makaleler, rehberler, notlar, adım adım talimatlar</p>
+            </div>
+            <div class="option-card" data-val="uygulamali">
+              <span class="option-icon">🔧</span>
+              <h4>Uygulamalı</h4>
+              <p>Deneyerek, yaparak, hata kabul eden pratik öğrenme</p>
+            </div>
           </div>
           <div class="nav-buttons">
-            <button class="btn btn-outline btn-prev">← Geri</button>
-            <button class="btn btn-next" disabled>Sonraki →</button>
+            <button class="btn btn-outline btn-prev">
+              <i class="fas fa-arrow-left"></i> Geri
+            </button>
+            <button class="btn btn-next" disabled>
+              Sonraki Adım <i class="fas fa-arrow-right"></i>
+            </button>
           </div>
         </div>
 
-        <!-- Adım 4 -->
+        <!-- Step 4: Interests -->
         <div class="step" data-step="4">
-          <h3 class="step-title">🎯 İlgi alanların?</h3>
-          <p class="step-desc">Birden fazla seçebilirsin.</p>
-          <div class="options">
-            <div class="option-card" data-val="sanat"><h4>🎨 Sanat</h4><p>Çizim, tasarım, fotoğraf</p></div>
-            <div class="option-card" data-val="teknoloji"><h4>💻 Teknoloji</h4><p>Kodlama, AI, elektronik</p></div>
-            <div class="option-card" data-val="spor"><h4>🏃 Spor</h4><p>Yoga, koşu, doğa</p></div>
-            <div class="option-card" data-val="el-isleri"><h4>🛠 El İşleri</h4><p>Ahşap, dikiş, model</p></div>
-            <div class="option-card" data-val="muzik"><h4>🎵 Müzik</h4><p>Enstrüman, prodüksiyon</p></div>
-            <div class="option-card" data-val="fikir"><h4>💭 Yazı</h4><p>Blog, hikaye, dil</p></div>
+          <div class="step-header">
+            <h3 class="step-title">🎯 İlgi alanların?</h3>
+            <p class="step-desc">Birden fazla seçebilirsin. Hangi alanlarda kendini geliştirmek istersin? Tutkunu keşfet!</p>
+          </div>
+          <div class="options-grid">
+            <div class="option-card" data-val="sanat">
+              <span class="option-icon">🎨</span>
+              <h4>Sanat & Tasarım</h4>
+              <p>Çizim, dijital sanat, fotoğraf, grafik tasarım</p>
+            </div>
+            <div class="option-card" data-val="teknoloji">
+              <span class="option-icon">💻</span>
+              <h4>Teknoloji</h4>
+              <p>Kodlama, yapay zeka, elektronik, robotik</p>
+            </div>
+            <div class="option-card" data-val="spor">
+              <span class="option-icon">🏃</span>
+              <h4>Spor & Hareket</h4>
+              <p>Yoga, koşu, dans, doğa sporları, fitness</p>
+            </div>
+            <div class="option-card" data-val="el-isleri">
+              <span class="option-icon">🛠</span>
+              <h4>El İşleri & Tamir</h4>
+              <p>Ahşap, dikiş, model yapımı, tamirat, DIY</p>
+            </div>
+            <div class="option-card" data-val="muzik">
+              <span class="option-icon">🎵</span>
+              <h4>Müzik & Ses</h4>
+              <p>Enstrüman, müzik prodüksiyonu, podcast, ses tasarımı</p>
+            </div>
+            <div class="option-card" data-val="fikir">
+              <span class="option-icon">💭</span>
+              <h4>Fikir & Yazı</h4>
+              <p>Blog yazarlığı, hikaye, strateji, dil öğrenme</p>
+            </div>
           </div>
           <div class="nav-buttons">
-            <button class="btn btn-outline btn-prev">← Geri</button>
-            <button class="btn btn-generate" disabled>🚀 Yol Haritası Oluştur</button>
+            <button class="btn btn-outline btn-prev">
+              <i class="fas fa-arrow-left"></i> Geri
+            </button>
+            <button class="btn btn-generate" disabled>
+              <i class="fas fa-magic"></i> Yol Haritası Oluştur
+            </button>
           </div>
         </div>
       </section>
 
-      <!-- Yükleniyor -->
-      <section id="loading-section" class="card loader" style="display:none;">
-        <div class="spinner"></div>
-        <p>AI yol haritanı hazırlıyor...</p>
+      <!-- Loading Section -->
+      <section id="loading-section" class="card loader-container">
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <div class="loader-text">AI yol haritanı hazırlıyor</div>
+        <div class="loader-subtext">Sana özel 7 günlük plan oluşturuluyor</div>
+        <div class="loader-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </section>
 
-      <!-- Sonuç -->
-      <section id="result-section" class="card" style="display:none;">
+      <!-- Result Section -->
+      <section id="result-section" class="card result-container">
         <div class="result-header">
-          <h2 id="res-title">-</h2>
-          <span class="tag">AI Önerisi</span>
+          <div class="result-icon">🎯</div>
+          <div class="result-title-wrapper">
+            <h2 id="res-title" class="result-title">Senin İçin Mükemmel Hobi</h2>
+            <span class="result-tag">
+              <i class="fas fa-robot"></i>
+              AI Destekli Öneri
+            </span>
+          </div>
         </div>
-        <p id="res-why" style="color:var(--muted); margin-bottom:16px;"></p>
+        
+        <div id="res-why" class="result-why"></div>
+        
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">
+          <i class="fas fa-calendar-alt" style="margin-right: 8px; color: var(--accent-primary);"></i>
+          7 Günlük Yol Haritan
+        </h3>
+        
         <div class="timeline" id="res-timeline"></div>
-        <div class="nav-buttons">
-          <button class="btn btn-outline" id="btn-copy">📋 Kopyala</button>
-          <button class="btn" id="btn-restart">🔄 Yeni</button>
+        
+        <div class="disclaimer">
+          <i class="fas fa-exclamation-triangle"></i>
+          <strong>Önemli:</strong> Bu öneriler yapay zeka tarafından kişiselleştirilmiş taslaklardır. Profesyonel eğitim, koçluk veya tıbbi tavsiye yerine geçmez.
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-outline" id="btn-copy">
+            <i class="fas fa-copy"></i> Panoya Kopyala
+          </button>
+          <button class="btn btn-outline" id="btn-json">
+            <i class="fas fa-download"></i> JSON İndir
+          </button>
+          <button class="btn" id="btn-restart">
+            <i class="fas fa-redo"></i> Yeni Keşif
+          </button>
         </div>
       </section>
 
-      <div class="error-box" id="errorBox">
-        <strong>❌ Hata:</strong>
-        <p id="errorMsg"></p>
-        <button class="btn" onclick="location.reload()" style="margin-top:12px; background:#ef4444">Tekrar Dene</button>
+      <!-- Error Box -->
+      <div id="error-box" class="error-box">
+        <div class="error-header">
+          <i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i>
+          <span>Bir Sorun Oluştu</span>
+        </div>
+        <div class="error-message" id="error-message"></div>
+        <div class="error-details" id="error-details"></div>
+        <button class="btn" onclick="location.reload()" style="margin-top: 16px; background: var(--error);">
+          <i class="fas fa-redo"></i> Tekrar Dene
+        </button>
       </div>
     </main>
 
-    <footer>© 2026 HobiKeşif AI | KVKK Uyumlu</footer>
+    <!-- Footer -->
+    <footer>
+      <p>© 2026 HobiKeşif AI | <a href="#">Gizlilik Politikası</a> | <a href="#">KVKK Aydınlatma</a></p>
+      <p style="margin-top: 8px; font-size: 0.85rem;">
+        <i class="fas fa-shield-alt"></i> Verileriniz anlık işlenir, asla saklanmaz.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Debug Panel -->
+  <div class="debug-panel" id="debugPanel">
+    <h4><i class="fas fa-bug"></i> Debug Console</h4>
+    <pre id="debugContent"></pre>
   </div>
 
   <script>
     // ==========================================
-    // API URL - BURAYA WORKER ADRESİNİ YAZ
+    // API CONFIGURATION
     // ==========================================
     const API_URL = "https://hobiapi.alyux.workers.dev/";
     // ==========================================
 
-    const state = { step: 1, answers: { time:'', budget:'', style:'', interests:[] } };
+    // Debug System
+    const debug = {
+      enabled: true,
+      log: function(...args) {
+        if (!this.enabled) return;
+        console.log('[HobiAI]', ...args);
+        const panel = document.getElementById('debugPanel');
+        const content = document.getElementById('debugContent');
+        panel.classList.add('active');
+        const timestamp = new Date().toLocaleTimeString();
+        content.innerHTML += `[${timestamp}] ${args.join(' ')}\n`;
+        content.scrollTop = content.scrollHeight;
+      },
+      clear: function() {
+        document.getElementById('debugContent').innerHTML = '';
+      }
+    };
+
+    // Create background particles
+    function createParticles() {
+      const container = document.getElementById('bgAnimation');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    // State Management
+    const state = {
+      step: 1,
+      answers: {
+        time: '',
+        budget: '',
+        style: '',
+        interests: []
+      }
+    };
     const totalSteps = 4;
 
+    // DOM Elements
     const els = {
       steps: document.querySelectorAll('.step'),
       progress: document.getElementById('progress'),
+      progressText: document.getElementById('progress-text'),
+      progressPercent: document.getElementById('progress-percent'),
       quiz: document.getElementById('quiz-section'),
       loading: document.getElementById('loading-section'),
       result: document.getElementById('result-section'),
       options: document.querySelectorAll('.option-card'),
-      errorBox: document.getElementById('errorBox'),
-      errorMsg: document.getElementById('errorMsg')
+      errorBox: document.getElementById('error-box'),
+      errorMessage: document.getElementById('error-message'),
+      errorDetails: document.getElementById('error-details')
     };
 
+    // Initialize
+    createParticles();
+    updateProgress();
+    debug.log('Application initialized', { API_URL, state });
+
+    // Progress Update
     function updateProgress() {
-      els.progress.style.width = `${(state.step / totalSteps) * 100}%`;
+      const percent = (state.step / totalSteps) * 100;
+      els.progress.style.width = percent + '%';
+      els.progressText.textContent = `Adım ${state.step} / ${totalSteps}`;
+      els.progressPercent.textContent = `%${Math.round(percent)}`;
     }
 
+    // Step Navigation
     function goToStep(n) {
+      debug.log('Navigating to step', n);
       els.steps.forEach(s => s.classList.remove('active'));
       document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
       state.step = n;
       updateProgress();
     }
 
+    // Option Selection
     els.options.forEach(opt => {
       opt.addEventListener('click', () => {
         const stepEl = opt.closest('.step');
-        const isMulti = stepEl.dataset.step == 4;
+        const stepNum = parseInt(stepEl.dataset.step);
+        const isMulti = stepNum === 4;
         
+        debug.log('Option clicked', { step: stepNum, value: opt.dataset.val, multi: isMulti });
+
         if (isMulti) {
           opt.classList.toggle('selected');
           state.answers.interests = [...stepEl.querySelectorAll('.selected')].map(c => c.dataset.val);
           stepEl.querySelector('.btn-generate').disabled = state.answers.interests.length === 0;
+          debug.log('Multi-select updated', state.answers.interests);
         } else {
           stepEl.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
           opt.classList.add('selected');
-          const key = ['time','budget','style'][state.step-1];
+          const key = ['time', 'budget', 'style'][state.step - 1];
           state.answers[key] = opt.dataset.val;
           stepEl.querySelector('.btn-next').disabled = false;
+          debug.log('Single select updated', key, opt.dataset.val);
         }
       });
     });
 
+    // Button Events
     document.querySelectorAll('.btn-next').forEach(btn => {
-      btn.addEventListener('click', () => goToStep(state.step + 1));
+      btn.addEventListener('click', () => {
+        debug.log('Next button clicked');
+        goToStep(state.step + 1);
+      });
     });
+
     document.querySelectorAll('.btn-prev').forEach(btn => {
-      btn.addEventListener('click', () => goToStep(state.step - 1));
+      btn.addEventListener('click', () => {
+        debug.log('Previous button clicked');
+        goToStep(state.step - 1);
+      });
     });
+
     document.querySelector('.btn-generate').addEventListener('click', generateRoadmap);
 
+    // AI Roadmap Generation
     async function generateRoadmap() {
-      els.quiz.style.display = 'none';
-      els.loading.style.display = 'block';
-      els.errorBox.style.display = 'none';
+      debug.log('Starting roadmap generation', state.answers);
       
-      const prompt = `Kullanıcı: zaman="${state.answers.time}", bütçe="${state.answers.budget}₺", öğrenme="${state.answers.style}", ilgi="${state.answers.interests.join(', ')}".
-Tek bir hobi öner. JSON formatında döndür:
+      els.quiz.style.display = 'none';
+      els.loading.classList.add('active');
+      els.errorBox.classList.remove('active');
+
+      const prompt = `Kullanıcı profili analiz edildi:
+- Zaman: ${state.answers.time} saat/hafta
+- Bütçe: ${state.answers.budget}₺/ay
+- Öğrenme stili: ${state.answers.style}
+- İlgi alanları: ${state.answers.interests.join(', ')}
+
+GÖREV: Bu profile uygun TEK BİR hobi öner ve 7 günlük detaylı başlangıç planı hazırla.
+
+KURALLAR:
+1. Sadece geçerli JSON döndür, başka metin ekleme
+2. Hobby: Türkçe, çekici bir isim
+3. Why: Max 150 karakter, neden bu hobi uygun
+4. Week: 7 gün, her gün için:
+   - gun: 1-7 arası sayı
+   - gorev: Detaylı, uygulanabilir görev (min 20 karakter)
+   - sure_dk: 15-60 dakika arası
+   - malzeme: Gerekli malzemeler (bedava/ucuz öncelikli)
+
+JSON FORMATI:
 {
-  "hobby": "Hobi adı",
-  "why": "Neden uygun (max 100 karakter)",
+  "hobby": "Hobi Adı",
+  "why": "Neden uygun olduğu",
   "week": [
-    {"gun": 1, "gorev": "Yapılacak", "sure_dk": 30, "malzeme": "Gerekli şeyler"}
+    {"gun": 1, "gorev": "İlk gün görevi", "sure_dk": 20, "malzeme": "Gerekli şeyler"},
+    ... (7 gün)
   ]
 }`;
 
       try {
+        debug.log('Sending API request to:', API_URL);
+        debug.log('Request payload:', {
+          model: 'meta-llama/llama-3.1-8b-instruct',
+          prompt_length: prompt.length
+        });
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
         const res = await fetch(API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({
             model: "meta-llama/llama-3.1-8b-instruct",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.7,
-            max_tokens: 800
-          })
+            max_tokens: 1000
+          }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+        debug.log('API Response status:', res.status);
+
         if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || `Sunucu hatası: ${res.status}`);
+          let errorData = {};
+          try {
+            errorData = await res.json();
+          } catch (e) {
+            // Ignore
+          }
+          
+          debug.error('API Error:', errorData);
+          throw new Error(
+            errorData.error || 
+            `Sunucu yanıt vermedi (Status: ${res.status}). ` +
+            `Lütfen API URL'yi kontrol edin: ${API_URL}`
+          );
         }
 
         const data = await res.json();
-        if (!data.choices?.[0]?.message?.content) throw new Error("Boş yanıt");
+        debug.log('API Response data:', data);
 
-        let json = JSON.parse(data.choices[0].message.content.replace(/```json/g,'').replace(/```/g,'').trim());
-        if (!json.hobby || !json.week?.length) throw new Error("Geçersiz format");
+        if (!data.choices?.[0]?.message?.content) {
+          debug.error('Invalid API response structure', data);
+          throw new Error("AI'dan geçerli yanıt alınamadı. Lütfen tekrar deneyin.");
+        }
 
+        // Parse AI response
+        let content = data.choices[0].message.content;
+        debug.log('Raw AI content:', content);
+
+        // Clean JSON
+        content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        let json;
+        try {
+          json = JSON.parse(content);
+        } catch (parseError) {
+          debug.error('JSON Parse Error:', parseError, content);
+          throw new Error("AI yanıtı okunamadı. Lütfen tekrar deneyin.");
+        }
+
+        // Validate structure
+        if (!json.hobby || !json.week || !Array.isArray(json.week) || json.week.length < 7) {
+          debug.error('Invalid JSON structure', json);
+          throw new Error("AI yanıtı geçerli formatta değil. Lütfen tekrar deneyin.");
+        }
+
+        debug.log('Valid roadmap received', json);
         renderResult(json);
+
       } catch (err) {
-        console.error('API Error:', err);
-        els.loading.style.display = 'none';
-        els.errorBox.style.display = 'block';
-        els.errorMsg.textContent = err.message + "\n\nAPI URL: " + API_URL;
+        debug.error('Generation error:', err);
+        showError(err);
+      } finally {
+        els.loading.classList.remove('active');
       }
     }
 
+    // Show Error
+    function showError(err) {
+      els.errorBox.classList.add('active');
+      els.errorMessage.textContent = err.message;
+      els.errorDetails.textContent = `API URL: ${API_URL}\nTimestamp: ${new Date().toLocaleString()}\nStep: ${state.step}`;
+      
+      debug.log('Error shown to user', err);
+    }
+
+    // Render Result
     function renderResult(data) {
-      els.loading.style.display = 'none';
-      els.result.style.display = 'block';
+      debug.log('Rendering result', data);
+      
+      els.result.classList.add('active');
       document.getElementById('res-title').textContent = `🎯 ${data.hobby}`;
       document.getElementById('res-why').textContent = data.why;
       
-      document.getElementById('res-timeline').innerHTML = data.week.map(d => `
-        <div class="day-card">
-          <h4>Gün ${d.gun} <span style="color:#94a3b8; font-weight:400">⏱ ${d.sure_dk} dk</span></h4>
-          <p>${d.gorev}</p>
-          <small style="color:#64748b">📦 ${d.malzeme}</small>
+      const timeline = document.getElementById('res-timeline');
+      timeline.innerHTML = data.week.map((d, index) => `
+        <div class="day-card" style="animation-delay: ${index * 0.1}s">
+          <div class="day-header">
+            <span class="day-number"><i class="fas fa-calendar-day" style="margin-right: 8px;"></i>Gün ${d.gun}</span>
+            <span class="day-duration">
+              <i class="fas fa-clock"></i>
+              ${d.sure_dk} dakika
+            </span>
+          </div>
+          <div class="day-task">${d.gorev}</div>
+          <div class="day-meta">
+            <span><i class="fas fa-box"></i> ${d.malzeme}</span>
+          </div>
         </div>
       `).join('');
 
+      // Copy button
       document.getElementById('btn-copy').onclick = () => {
-        navigator.clipboard.writeText(`🎯 ${data.hobby}\n${data.week.map(d => `Gün ${d.gun}: ${d.gorev}`).join('\n')}`);
-        alert("Kopyalandı!");
+        const text = `🎯 ${data.hobby}\n\n${data.why}\n\n7 Günlük Plan:\n${data.week.map(d => `Gün ${d.gun}: ${d.gorev} (${d.sure_dk}dk)`).join('\n')}\n\n---\nHobiKeşif AI ile oluşturuldu`;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('btn-copy');
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+          btn.style.background = 'var(--success)';
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+          }, 2000);
+        });
+      };
+
+      // JSON download
+      document.getElementById('btn-json').onclick = () => {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `hobi-yol-haritasi-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       };
     }
 
+    // Restart
     document.getElementById('btn-restart').addEventListener('click', () => {
-      state.step = 1; state.answers = { time:'', budget:'', style:'', interests:[] };
+      debug.log('Restarting quiz');
+      state.step = 1;
+      state.answers = { time: '', budget: '', style: '', interests: [] };
+      
       document.querySelectorAll('.selected').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.btn-next, .btn-generate').forEach(b => b.disabled = true);
-      els.result.style.display = 'none'; els.loading.style.display = 'none'; els.quiz.style.display = 'block';
-      els.errorBox.style.display = 'none';
+      
+      els.result.classList.remove('active');
+      els.loading.classList.remove('active');
+      els.quiz.style.display = 'block';
+      els.errorBox.classList.remove('active');
+      
       goToStep(1);
     });
 
-    updateProgress();
+    // Debug toggle (press D)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'd' || e.key === 'D') {
+        const panel = document.getElementById('debugPanel');
+        panel.classList.toggle('active');
+      }
+    });
+
+    debug.log('All event listeners attached');
   </script>
 </body>
 </html>
